@@ -1,0 +1,108 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if the user is an admin
+    function isAdmin() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Helper function to check if user is a club secretary
+    function isClubSecretary() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'club-secretary';
+    }
+    
+    // Helper function to check if user is secretary of a specific club
+    function isSecretaryOfClub(clubId) {
+      return isClubSecretary() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.clubId == clubId;
+    }
+    
+    // Users collection
+    // - Users can read their own profile
+    // - Users can update their own profile (except role)
+    // - Admins can read/write all user profiles
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow update: if isAuthenticated() && 
+                    (request.auth.uid == userId && !('role' in request.resource.data) || 
+                     request.resource.data.role == resource.data.role) || 
+                    isAdmin();
+      allow delete: if isAdmin();
+    }
+    
+    // Clubs collection
+    // - Anyone can read clubs (public data)
+    // - Club secretaries can update their own club
+    // - Admins can create/update/delete any club
+    match /clubs/{clubId} {
+      allow read: if true;
+      allow create: if isAdmin();
+      allow update: if isSecretaryOfClub(clubId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+    
+    // Events collection
+    // - Anyone can read events (public data)
+    // - Club secretaries can manage events for their club
+    // - Admins can manage all events
+    match /events/{eventId} {
+      allow read: if true;
+      allow create: if isClubSecretary() || isAdmin();
+      allow update, delete: if isAuthenticated() && 
+                            (resource.data.clubId != null && isSecretaryOfClub(resource.data.clubId)) || 
+                            isAdmin();
+    }
+    
+    // Posts collection
+    // - Anyone can read posts (public data)
+    // - Club secretaries can manage posts for their club
+    // - Admins can manage all posts
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if isClubSecretary() || isAdmin();
+      allow update, delete: if isAuthenticated() && 
+                            (resource.data.clubId != null && isSecretaryOfClub(resource.data.clubId)) || 
+                            isAdmin();
+    }
+    
+    // Notifications collection
+    // - Users can read their own notifications
+    // - Club secretaries and admins can create notifications
+    // - Users can mark their own notifications as read
+    // - Admins can manage all notifications
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && 
+                  (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isClubSecretary() || isAdmin();
+      allow update: if isAuthenticated() && 
+                    (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+    
+    // Club memberships collection
+    // - Users can read their own memberships
+    // - Club secretaries can manage memberships for their club
+    // - Admins can manage all memberships
+    match /memberships/{membershipId} {
+      allow read: if isAuthenticated() && 
+                  (resource.data.userId == request.auth.uid || 
+                   isSecretaryOfClub(resource.data.clubId) || 
+                   isAdmin());
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() && 
+                            (resource.data.userId == request.auth.uid || 
+                             isSecretaryOfClub(resource.data.clubId) || 
+                             isAdmin());
+    }
+  }
+}
