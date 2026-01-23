@@ -5,8 +5,9 @@ College Club Coordination, Event Planning, and Engagement Platform
 
 ## Team Details
 
-Team Name: Club Connectors  
+Team Name: Club-Connectors  
 Team Leader: Om Kulkarni  
+Team members: Amish Prabhu, Shruti Patil  
 Event: TechSprint 2K25  
 Institute: Walchand College of Engineering, Sangli  
 Problem Statement Category: Open Innovation  
@@ -23,7 +24,8 @@ In colleges, club-related information is scattered across WhatsApp groups, poste
 
 Club-Connect is a centralized college club coordination platform that goes beyond event management. It enables clubs to manage events, assign tasks to members, and coordinate activities efficiently from one system. Club admins can assign tasks and send automated email notifications to ensure accountability. Event and task clash detection prevents scheduling conflicts. Students receive real-time updates through Firebase, while Google Calendar integration keeps schedules synchronized. Cloudinary manages secure media uploads, and an AI Campus Bot assists users with navigation and queries. The platform improves transparency, communication, and engagement across campus life.
 
-
+## Project Demo
+🎥 [Watch Demo Video](https://drive.google.com/file/d/15zjmpC54eSvsmOG5AULtlxQCDm28_qm-/view)  
 
 ## Key Features
 
@@ -44,7 +46,8 @@ Club-Connect is a centralized college club coordination platform that goes beyon
 
 ## Tech Stack
 
-Frontend: React, Tailwind CSS  
+Frontend: React 18, TypeScript   
+Styling: Tailwind CSS  
 Backend & Database: Firebase Firestore  
 Authentication: Firebase Authentication  
 Media Storage: Cloudinary  
@@ -54,29 +57,27 @@ Version Control: Git and GitHub
 
 ## Google Technologies Used
 
-- Firebase Authentication
+- Firebase Authentication:  
 Used for secure login and role-based access control.
 
-- Firebase Firestore
+- Firebase Firestore:  
 Used for real-time storage of events, tasks, and club data.
 
-- Google Calendar API
+- Google Calendar API:  
 Used to sync events and prevent scheduling conflicts.
 
-- Google Maps
+- Google Fonts:    
+Inter font family.
 
 
 
 ## Google AI Tools Integrated
 
-- Google Gemini / Google AI Studio
+- Google Gemini / Google AI Studio:  
 Used during development for feature planning, UI improvements, and intelligent assistance.
 
-## AI Features
-
-- AI Campus Bot (powered by Groq)  
-An AI-powered assistant that helps users navigate the platform and get instant responses to campus-related queries.
-
+- Google Gemini:  
+Used as an AI assistant for caption generation and campus guidance to improve user interaction and accessibility.
 
 
 ## Getting Started
