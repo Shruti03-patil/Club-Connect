@@ -154,10 +154,13 @@ export default function StudentAIAssistant({ onNavigateToClub, onNavigateToEvent
             // Import dynamically to avoid circular dependencies if any (standard practice)
             const { getGeminiChatCompletion } = await import('../lib/geminiService');
 
-            // Construct messages array for Groq
+            // Construct messages array for Gemini
+            // Filter out the initial greeting (id: '1') to avoid "First content should be with role 'user'" error
+            const validHistory = messages.filter(m => m.id !== '1');
+
             const chatMessages = [
                 { role: "system", content: systemPrompt },
-                ...messages.slice(-10).map(m => ({
+                ...validHistory.slice(-10).map(m => ({
                     role: m.role,
                     content: m.content
                 })),

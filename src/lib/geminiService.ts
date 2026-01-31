@@ -24,10 +24,8 @@ async function fileToGenerativePart(blob: Blob) {
 // Chat Completion
 export const getGeminiChatCompletion = async (messages: any[]) => {
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
         // Parse messages to separate system prompt and history
-        let systemInstruction = undefined;
+        let systemInstruction: any = undefined;
         let history = [];
         let lastMessage = "";
 
@@ -36,7 +34,10 @@ export const getGeminiChatCompletion = async (messages: any[]) => {
             const msg = messages[i];
 
             if (msg.role === 'system') {
-                systemInstruction = msg.content;
+                systemInstruction = {
+                    role: 'system',
+                    parts: [{ text: msg.content }]
+                };
             } else if (i === messages.length - 1 && msg.role === 'user') {
                 // The very last message is the new prompt
                 lastMessage = msg.content;
@@ -49,9 +50,13 @@ export const getGeminiChatCompletion = async (messages: any[]) => {
             }
         }
 
+        const model = genAI.getGenerativeModel({
+            model: "gemini-2.5-flash",
+            systemInstruction: systemInstruction,
+        });
+
         const chat = model.startChat({
             history: history,
-            systemInstruction: systemInstruction,
         });
 
         const result = await chat.sendMessage(lastMessage);
@@ -66,7 +71,7 @@ export const getGeminiChatCompletion = async (messages: any[]) => {
 // Audio Transcription (using Gemini's multimodal capabilities)
 export const transcribeAudio = async (audioBlob: Blob): Promise<string> => {
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         // Convert Blob to Part
         const audioPart = await fileToGenerativePart(audioBlob);
@@ -86,7 +91,7 @@ export const transcribeAudio = async (audioBlob: Blob): Promise<string> => {
 // Vision (Image Captioning/Analysis)
 export const generateImageCaption = async (imageBase64: string, prompt: string): Promise<string> => {
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const imagePart = {
             inlineData: {
