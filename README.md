@@ -154,8 +154,7 @@ npm run dev
 ```
 The application will run at:
 
-http://localhost:5173
-
+https://club-connect-phi.vercel.app/
 
 ---
 
